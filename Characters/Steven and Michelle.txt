@@ -1,0 +1,15 @@
+Character's Name:	Steven and Michelle
+
+
+States: 
+[('what', 0), ('?', 1), ('!', 2), ('\n', 3)]
+
+
+Initial Distributions: 
+[1.0, 0.0, 0.0, 0.0]
+
+
+Transition Probabilities: 
+[[0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0]]
+
+

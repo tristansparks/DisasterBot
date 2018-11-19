@@ -1,0 +1,15 @@
+Character's Name:	Everyone
+
+
+States: 
+[('surprise', 0), ('!', 1), ('\n', 2)]
+
+
+Initial Distributions: 
+[1.0, 0.0, 0.0]
+
+
+Transition Probabilities: 
+[[0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, 0.0]]
+
+
