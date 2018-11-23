@@ -26,31 +26,44 @@ class MarkovModel:
     def __init__(self, name, listOfLines):
         self.name = name
         self.states = {} #a mapping from the word to number (indice of the word in states vector)
-        count = 0
+        self.listOfLines = listOfLines
+        self.wordCount = 0
+        
         # create mapping for states
         for line in listOfLines:
             for w in line:
                 if w not in list(self.states.keys()): #new word found
-                    self.states[w] = count
-                    count += 1
+                    self.states[w] = self.wordCount
+                    self.wordCount += 1
+                    
+        self.calc_initial(1)
+        self.calc_transition(1)
                     
         # with mappings we can easily build initial distributions and transition matrix
-
-        #### Lots of them have zero probabilities... so why keep them? (NOT DONE!!!!!!)
-        #### For transition, keep a list of next possible states and then count and normalize
+                
+    def calc_initial(self, smooth_param=0):
         #### For Initial_dist, keep a list of possible first words and then cound and normalize
-        self.transition = np.zeros( (count,count) ) # Transition probabilities
-        self.initial_dist = np.zeros( count ) # same length as states
-        
-        for line in listOfLines:
+        self.initial_dist = np.zeros( self.wordCount ) # same length as states
+
+        for line in self.listOfLines:
             # for now set the initial_dist by the first words in each LINE, not sentences
-            self.initial_dist[self.states[line[0]]] += 1
-            for i in list(range(0,len(line)-1)):
-                self.transition[ self.states[line[i]], self.states[line[i+1]] ] += 1
-        self.initial_dist /= self.initial_dist.sum()
-        for i in list(range(0, len(self.transition)-1)):
-            self.transition[i] /= self.transition[i].sum() 
+            self.initial_dist[self.states[line[0]]] += 1 
+            
+        self.initial_dist = np.array( [ elem + smooth_param for elem in self.initial_dist ] )
+        self.initial_dist /= ( len(self.initial_dist) + smooth_param * len(self.listOfLines) )
     
+    def calc_transition(self, smooth_param=0):
+        self.transition = np.zeros( (self.wordCount, self.wordCount) ) # Transition probabilities
+        
+        for line in self.listOfLines:
+            for i in range(len(line) - 1):
+                self.transition[ self.states[line[i]], self.states[line[i+1]] ] += 1
+                
+        for i in range(len(self.transition)):
+            corpus_size = self.transition[i].sum()
+            self.transition[i] = [ elem + smooth_param for elem in self.transition[i] ]
+            self.transition[i] /= ( corpus_size + smooth_param * self.wordCount)
+        
     def write_info(self, file):
         file.write('States: \n'+ str(list(self.states.items())) +'\n\n\n')
         file.write('Initial Distributions: \n' + str(self.initial_dist.tolist()) + '\n\n\n')
@@ -103,8 +116,8 @@ for line in corpus:
         Characters[name] = newChar
 
     Characters[name].addToLines(sent)
-
-#for sent in Characters['Denny']:
+#
+#for sent in Characters['Denny'].listOfLines:
 #    print(sent)
 
 ############## Markov Model ###########
@@ -113,7 +126,7 @@ for name in charNames:
     Characters[name].BuildAMarkovModel()
     Characters[name].write_info()
 
-
+print(Characters['Denny'].MM.states['wow'])
 
 
 
