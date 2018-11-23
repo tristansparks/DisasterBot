@@ -52,7 +52,7 @@ class MarkovModel:
             self.initial_dist[self.states[line[0]]] += 1 
             
         self.initial_dist = np.array( [ elem + smooth_param for elem in self.initial_dist ] )
-        self.initial_dist /= ( len(self.initial_dist) + smooth_param * len(self.listOfLines) )
+        self.initial_dist /= ( len(self.initial_dist) * smooth_param + len(self.listOfLines) )
     
     def calc_transition(self, smooth_param=0):
         self.transition = np.zeros( (self.wordCount, self.wordCount) ) # Transition probabilities
