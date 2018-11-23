@@ -2,14 +2,14 @@ Character's Name:	Steven and Michelle
 
 
 States: 
-[('what', 0), ('?', 1), ('!', 2), ('\n', 3)]
+[('what', 0)]
 
 
 Initial Distributions: 
-[0.4, 0.2, 0.2, 0.2]
+[1.0]
 
 
 Transition Probabilities: 
-[[0.2, 0.4, 0.2, 0.2], [0.2, 0.2, 0.4, 0.2], [0.2, 0.2, 0.2, 0.4], [0.25, 0.25, 0.25, 0.25]]
+[[1.0]]
 
 
