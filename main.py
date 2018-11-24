@@ -161,8 +161,10 @@ def strip_line_with_sentences(line):
         
         for word in stripped:
             if (word not in string.punctuation):
-                sent.append(word.lower())
+                sent.append(word.strip().lower())
          
+            
+        sent.append('\n')
         if (sent != []):
             sentences.append(sent)
             
@@ -182,8 +184,9 @@ def strip_line_no_sentences(line):
     sent = []
     for word in stripped:
         if (word not in string.punctuation):
-            sent.append(word.lower())
+            sent.append(word.strip().lower())
             
+    sent.append('\n')
     return name, sent
     
 file_corpus = open('corpus.txt')
