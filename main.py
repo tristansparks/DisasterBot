@@ -91,7 +91,7 @@ class MarkovModel:
             
             prev = new
             
-        print(generated_sent)
+        return generated_sent
         
     def generate_deterministic(self, length=20):
         
@@ -111,7 +111,7 @@ class MarkovModel:
             
             prev = new
             
-        print(generated_sent)        
+        return generated_sent      
     
 class Character:
     def __init__(self, name, firstlines=[]):
@@ -164,8 +164,8 @@ def strip_line_with_sentences(line):
                 sent.append(word.strip().lower())
          
             
-        sent.append('\n')
         if (sent != []):
+            sent.append('\n')
             sentences.append(sent)
             
     return name, sentences
@@ -186,7 +186,7 @@ def strip_line_no_sentences(line):
         if (word not in string.punctuation):
             sent.append(word.strip().lower())
             
-    sent.append('\n')
+    #sent.append('\n')
     return name, sent
     
 file_corpus = open('corpus.txt')
@@ -225,4 +225,6 @@ Characters['Johnny'].BuildAMarkovModel()
 
 
 FullCorpus.BuildAMarkovModel()
-
+print(len(FullCorpus.MM.states))
+for _ in range(10):
+    print(FullCorpus.MM.generate_deterministic(length=6))
