@@ -4,22 +4,10 @@
 @author: Mahyar Bayran
 """
 
-import random
+from nltk.tokenize import sent_tokenize
 
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk import WordNetLemmatizer
-from nltk.corpus import stopwords
-
-import sklearn.metrics
-from sklearn.model_selection import cross_val_score
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn import svm
-from sklearn import linear_model
-from sklearn.model_selection import train_test_split
 import numpy as np 
 import os.path
-from numpy.random import choice
 import string
 
 
@@ -72,7 +60,8 @@ class MarkovModel:
         file.write('Transition Probabilities: \n' + str(self.transition.tolist() )+ '\n\n\n')
         
         
-    def generate(self, length=20):
+    def generate(self, word_limit=20):
+        end_tokens = [".", "?", "!"]
         
         words = [0 for _ in range(len(self.states))]
         
@@ -84,16 +73,23 @@ class MarkovModel:
         generated_sent = [first_word]
         
         prev = first_word
-        for _ in range(length - 1):
+        for _ in range(word_limit - 1):
             probs = self.transition[self.states[prev]]
             new = np.random.choice(words, p=probs)
             generated_sent.append(new)
             
             prev = new
             
+        while(new not in end_tokens):
+            new = words[self.transition[self.states[prev]].tolist().index(max(self.transition[self.states[prev]]))]
+            generated_sent.append(new)
+            
+            prev = new
+            
         return generated_sent
         
-    def generate_deterministic(self, length=20):
+    def generate_deterministic(self, word_limit=20):
+        end_tokens = [".", "?", "!"]
         
         words = [0 for _ in range(len(self.states))]
         
@@ -105,7 +101,13 @@ class MarkovModel:
         generated_sent = [first_word]
         
         prev = first_word
-        for _ in range(length - 1):
+        for _ in range(word_limit - 1):
+            new = words[self.transition[self.states[prev]].tolist().index(max(self.transition[self.states[prev]]))]
+            generated_sent.append(new)
+            
+            prev = new
+            
+        while(new not in end_tokens):
             new = words[self.transition[self.states[prev]].tolist().index(max(self.transition[self.states[prev]]))]
             generated_sent.append(new)
             
@@ -148,6 +150,9 @@ def strip_line_with_sentences(line):
     # should remove punctuation at some point
     sentences = []
 
+    punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
+    end_tokens = [".", "?", "!"]
+    
     # I think dividing into sentences was a mistake
     raw_sentences = sent_tokenize(l)
     for raw_sent in raw_sentences:
@@ -156,16 +161,19 @@ def strip_line_with_sentences(line):
         # tokenize sentences by hand because NLTK doesn't like words like "gonna"
         # which will obviously be used FREQUENTLY for our purposes
         words = raw_sent.split(" ")
-        table = str.maketrans('', '', string.punctuation)
+        table = str.maketrans('', '', punctuation)
         stripped = [w.translate(table) for w in words]
         
         for word in stripped:
             if (word not in string.punctuation):
-                sent.append(word.strip().lower())
-         
-            
+                if (True in [word.strip().endswith(c) for c in end_tokens]):
+                    end_char = word.strip()[-1]
+                    sent.append(word.strip()[:-1].lower())
+                    sent.append(end_char)
+                else:
+                    sent.append(word.strip().lower())
+                
         if (sent != []):
-            sent.append('\n')
             sentences.append(sent)
             
     return name, sentences
@@ -175,18 +183,24 @@ def strip_line_no_sentences(line):
     name = line[0:a]
     l = line[a+2:] # -1 or nothing?
 
+    punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
+    end_tokens = [".", "?", "!"]
     # tokenize sentences by hand because NLTK doesn't like words like "gonna"
     # which will obviously be used FREQUENTLY for our purposes
     words = l.split(" ")
-    table = str.maketrans('', '', string.punctuation)
+    table = str.maketrans('', '', punctuation)
     stripped = [w.translate(table) for w in words]
-    
+            
     sent = []
     for word in stripped:
         if (word not in string.punctuation):
-            sent.append(word.strip().lower())
-            
-    #sent.append('\n')
+            if (True in [word.strip().endswith(c) for c in end_tokens]):
+                end_char = word.strip()[-1]
+                sent.append(word.strip()[:-1].lower())
+                sent.append(end_char)
+            else:
+                sent.append(word.strip().lower())
+                
     return name, sent
     
 file_corpus = open('corpus.txt')
@@ -225,6 +239,6 @@ Characters['Johnny'].BuildAMarkovModel()
 
 
 FullCorpus.BuildAMarkovModel()
-print(len(FullCorpus.MM.states))
+
 for _ in range(10):
-    print(FullCorpus.MM.generate_deterministic(length=6))
+    print(FullCorpus.MM.generate(8))
