@@ -1,0 +1,257 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6800 64-bit) (preloaded format=pdflatex 2018.9.17)  7 DEC 2018 16:28
+entering extended mode
+**./Report.tex
+(Report.tex
+LaTeX2e <2018-04-01> patch level 5
+
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\arti
+cle.cls"
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\size
+11.clo"
+File: size11.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (naaclhlt2016.sty
+Conference Style for NAACL-HLT 2016 -- released October 13, 2015
+\titlebox=\skip43
+\naaclrulerbox=\box26
+\naaclrulercount=\count88
+\naaclruleroffset=\dimen103
+\cv@lineheight=\dimen104
+\cv@boxheight=\dimen105
+\cv@tmpbox=\box27
+\cv@refno=\count89
+\cv@tot=\count90
+\cv@tmpc@=\count91
+\cv@tmpc=\count92
+)
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ti
+mes.sty"
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\late
+xsym.sty"
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 52.
+)
+No file Report.aux.
+\openout1 = `Report.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 67.
+LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 67.
+LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 67.
+LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 67.
+LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 67.
+LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 67.
+LaTeX Font Info:    ... okay on input line 67.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 67.
+
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ot
+1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+) ABD: EveryShipout initializing macros
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 69.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 69.
+
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\ulas
+y.fd"
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 69.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 69.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 77.
+
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ot
+1pcr.fd"
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Underfull \hbox (badness 7203) in paragraph at lines 72--78
+[]\OT1/ptm/m/n/10 This doc-u-ment con-tains in-struc-tions for
+ []
+
+
+Underfull \hbox (badness 1389) in paragraph at lines 72--78
+\OT1/ptm/m/n/10 prepar-ing NAACL HLT 2016 sub-mis-sions
+ []
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 91.
+
+LaTeX Warning: Reference `ssec:accessibility' on page 1 undefined on input line
+ 91.
+
+
+Underfull \hbox (badness 2903) in paragraph at lines 101--103
+\OT1/ptm/m/n/10.95 for ini-tial sub-mis-sion. Au-thors should place
+ []
+
+
+LaTeX Warning: Reference `ssec:first' on page 1 undefined on input line 112.
+
+
+LaTeX Warning: Reference `sec:length' on page 1 undefined on input line 120.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 122.
+[1{C:/Users/Tristan Sparks/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
+
+
+
+]
+Underfull \hbox (badness 1436) in paragraph at lines 123--125
+[]\OT1/ptm/m/n/10.95 By un-com-ment-ing [][]\OT1/pcr/m/n/10 \naaclfinalcopy []\
+OT1/ptm/m/n/10.95 at the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--158
+\OT1/ptm/m/n/10.95 NAACL HLT pro-vides this de-scrip-tion in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--158
+\OT1/ptm/m/n/10.95 L[]T[]X2e (\OT1/pcr/m/n/10 naaclhlt2016.tex\OT1/ptm/m/n/10.9
+5 ) and PDF
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--158
+\OT1/ptm/m/n/10.95 for-mat (\OT1/pcr/m/n/10 naaclhlt2016.pdf\OT1/ptm/m/n/10.95 
+), along with
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--158
+\OT1/ptm/m/n/10.95 the L[]T[]X2e style file used to for-mat it
+ []
+
+
+Underfull \vbox (badness 2653) has occurred while \output is active []
+
+ [2]
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 207.
+
+
+("C:\Users\Tristan Sparks\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\om
+sptm.fd"
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 207.
+
+
+LaTeX Warning: Reference `font-table' on page 3 undefined on input line 231.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 256.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 277.
+
+LaTeX Warning: Reference `sect:pdf' on page 3 undefined on input line 288.
+
+
+LaTeX Warning: Citation `Gusfield:97' on page 3 undefined on input line 301.
+
+
+LaTeX Warning: Citation `Gusfield:97' on page 3 undefined on input line 302.
+
+
+LaTeX Warning: Citation `Gusfield:97' on page 3 undefined on input line 303.
+
+
+LaTeX Warning: Citation `Aho:72' on page 3 undefined on input line 303.
+
+
+LaTeX Warning: Citation `Aho:72' on page 3 undefined on input line 305.
+
+
+LaTeX Warning: Citation `Chandra:81' on page 3 undefined on input line 306.
+
+[3]
+
+LaTeX Warning: Reference `tab:accents' on page 4 undefined on input line 311.
+
+
+LaTeX Warning: Citation `APA:83' on page 4 undefined on input line 328.
+
+[4]
+Underfull \hbox (badness 1259) in paragraph at lines 426--439
+[]\OT1/ptm/m/n/10.95 Preprint servers such as arXiv.org and ACL-
+ []
+
+
+Underfull \hbox (badness 2318) in paragraph at lines 440--445
+[]\OT1/ptm/m/n/10.95 Authors sub-mit-ting more than one pa-per to
+ []
+
+No file Report.bbl.
+[5] (Report.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(\end occurred when \iffalse on line 298 was incomplete) 
+Here is how much of TeX's memory you used:
+ 513 strings out of 492973
+ 7054 string characters out of 3122703
+ 75563 words of memory out of 3000000
+ 4408 multiletter control sequences out of 15000+200000
+ 37656 words of font info for 80 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 31i,17n,23p,908b,329s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/Tristan Spark
+s/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<C:/Users/Trist
+an Sparks/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi
+10.pfb><C:/Users/Tristan Sparks/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/p
+ublic/amsfonts/cm/cmr10.pfb><C:/Users/Tristan Sparks/AppData/Local/Programs/MiK
+TeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Tristan Sparks/AppD
+ata/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/User
+s/Tristan Sparks/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/courier/ucrr
+8a.pfb><C:/Users/Tristan Sparks/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/u
+rw/helvetic/uhvb8a.pfb><C:/Users/Tristan Sparks/AppData/Local/Programs/MiKTeX 2
+.9/fonts/type1/urw/times/utmb8a.pfb><C:/Users/Tristan Sparks/AppData/Local/Prog
+rams/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Users/Tristan Sparks/AppDa
+ta/Local/Programs/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Report.pdf (5 pages, 134913 bytes).
+PDF statistics:
+ 55 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
