@@ -116,7 +116,9 @@ for line in external_corpus_raw:
     external_corpus.append(new_line)
     
 em = WeightedMarkovModel("jane", FullCorpus.listOfLines, external_corpus)
-
+print(em.generate())
+#for word, index in em.states.items():
+#    print(word, " initial prob: ", em.initial_dist[index])
 #for sent in Characters['Denny'].listOfLines:
 #    print(sent)
 
@@ -124,10 +126,10 @@ em = WeightedMarkovModel("jane", FullCorpus.listOfLines, external_corpus)
 #    Characters[name].BuildAMarkovModel()
 #    Characters[name].write_info()
         
-Characters['Johnny'].BuildAMarkovModel()
-
-
-FullCorpus.BuildAMarkovModel()
+#Characters['Johnny'].BuildAMarkovModel()
+#
+#
+#FullCorpus.BuildAMarkovModel()
 
 #for _ in range(10):
 #    print(FullCorpus.MM.generate(8))
