@@ -19,7 +19,7 @@ from nltk.corpus import gutenberg
 def strip_line_with_sentences(line):
     a = line.index(':')
     name = line[0:a]
-    l = line[a+2:] # -1 or nothing?
+    l = line[a+2:] 
     # should remove punctuation at some point
     sentences = []
 
@@ -54,7 +54,7 @@ def strip_line_with_sentences(line):
 def strip_line_no_sentences(line):
     a = line.index(':')
     name = line[0:a]
-    l = line[a+2:] # -1 or nothing?
+    l = line[a+2:]
 
     punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
     end_tokens = [".", "?", "!"]
