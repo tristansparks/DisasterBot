@@ -145,12 +145,12 @@ def find_similar_scripts(method, n_top):
     
     return sorted_scores[0:n_top]
 
-# choose the method
-method1 ='ROUGE'
-method2 = 'PERPLEXITY'
-n_top = 10
-
-print(' \nROUGE : \n' )
-print(find_similar_scripts(method1, n_top))
-print(' \nPerplexity : \n' )
-print(find_similar_scripts(method2, n_top))
+## choose the method
+#method1 ='ROUGE'
+#method2 = 'PERPLEXITY'
+#n_top = 10
+#
+#print(' \nROUGE : \n' )
+#print(find_similar_scripts(method1, n_top))
+#print(' \nPerplexity : \n' )
+#print(find_similar_scripts(method2, n_top))

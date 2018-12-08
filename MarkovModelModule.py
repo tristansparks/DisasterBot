@@ -23,13 +23,13 @@ def random_choice(options, probabilities, randomness=3):
     sorted_by_value = sorted(d.items(), key=lambda kv: kv[1], reverse=True)
     
     cumm_sorted = [0]
-    for i in range(0, len(sorted_by_value)):
+    for i in range(len(sorted_by_value)):
         cumm_sorted.append(cumm_sorted[-1] + sorted_by_value[i][1])
     
     random_num = random.uniform(0, 1)
     
-    for i in range(0, len(sorted_by_value)):
-        if ( (random_num >= cumm_sorted[i]) & (random_num<= cumm_sorted[i+1]) ):
+    for i in range(len(sorted_by_value)):
+        if ( (random_num >= cumm_sorted[i]) & (random_num <= cumm_sorted[i+1]) ):
             index = i
             break
     '''
@@ -37,6 +37,7 @@ def random_choice(options, probabilities, randomness=3):
     while(randint(0, randomness) != 0):
         index += 1
     ''' 
+    print(index)
     return sorted_by_value[index][0]
     
 
