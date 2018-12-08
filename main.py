@@ -10,7 +10,7 @@ import numpy as np
 import os.path
 import string
 from CharacterModule import Character
-from MarkovModelModule import MarkovModel, WeightedMarkovModel
+from MarkovModelModule import MarkovModel, WeightedMarkovModel, ComboMarkovModel
 
 from nltk.corpus import gutenberg
 
@@ -84,7 +84,7 @@ charNames = []
 Characters = {}
 
 FullCorpus = Character("full")
-external_corpus_raw = gutenberg.sents('austen-emma.txt')[0:2000]
+external_corpus_raw = gutenberg.sents('bryant-stories.txt')[10:-1]
 
 punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
 end_tokens = [".", "?", "!"]
@@ -104,7 +104,9 @@ for line in corpus:
     else:
         Characters[name].addToLines(sentences)
         
-
+#for name in charNames:
+#    Characters[name].BuildAMarkovModel()
+#    Characters[name].write_info()
 
 external_corpus = []
 for line in external_corpus_raw:
@@ -112,25 +114,10 @@ for line in external_corpus_raw:
     for word in line:
         if (word not in punctuation):
             new_line.append(word.lower())
-            
-    external_corpus.append(new_line)
+     
+    if (new_line != []):
+        external_corpus.append(new_line)
     
-em = WeightedMarkovModel("jane", FullCorpus.listOfLines, external_corpus)
-print(em.generate())
-#for word, index in em.states.items():
-#    print(word, " initial prob: ", em.initial_dist[index])
-#for sent in Characters['Denny'].listOfLines:
-#    print(sent)
-
-#for name in charNames:
-#    Characters[name].BuildAMarkovModel()
-#    Characters[name].write_info()
-        
-#Characters['Johnny'].BuildAMarkovModel()
-#
-#
-#FullCorpus.BuildAMarkovModel()
-
-#for _ in range(10):
-#    print(FullCorpus.MM.generate(8))
-
+fc = MarkovModel("fc", FullCorpus.listOfLines, smooth_param=0.5)
+jane = MarkovModel("jane", external_corpus, smooth_param=1)
+print(fc.generate(100))
