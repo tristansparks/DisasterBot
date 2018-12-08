@@ -3,6 +3,7 @@
 Created on Thu Dec  6 21:17:13 2018
 
 @author: Tristan Sparks
+@author: Mahyar Bayran
 """
 
 from nltk.tokenize import sent_tokenize

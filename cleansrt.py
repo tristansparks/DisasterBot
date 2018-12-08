@@ -1,3 +1,8 @@
+"""
+@author: Tristan Sparks
+@author: Mahyar Bayran
+"""
+
 import pysrt
 import os
 import string

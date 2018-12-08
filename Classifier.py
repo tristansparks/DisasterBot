@@ -1,3 +1,7 @@
+"""
+@author: Tristan Sparks
+@author: Mahyar Bayran
+"""
 '''
 Find movies that are similar in scripts to the original movie
 '''
@@ -83,7 +87,7 @@ def get_unigrams(myString):
     return result
 
 def find_similar_scripts(method, n_top):
-
+    
     ### clean the original and extract bigrams
     file = open('corpus.txt', 'r')
     corpus = file.readlines()
@@ -119,7 +123,7 @@ def find_similar_scripts(method, n_top):
             #score_bi = ROUGE(bigrams_corpus, bigrams_ex)
             score_both = ROUGE(both_corpus, both_ex)
             scores[name] = score_both
-            print('---ROUGE Score: '+ str(score_both))
+            #print('---ROUGE Score: '+ str(score_both))
             #if score_both >= threshold:
             #    chosen_ones.append(name)
         if method == 'PERPLEXITY':
@@ -146,7 +150,7 @@ method1 ='ROUGE'
 method2 = 'PERPLEXITY'
 n_top = 10
 
-print(' ROUGE : \n' )
+print(' \nROUGE : \n' )
 print(find_similar_scripts(method1, n_top))
-print(' Perplexity : \n' )
+print(' \nPerplexity : \n' )
 print(find_similar_scripts(method2, n_top))

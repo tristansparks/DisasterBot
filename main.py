@@ -120,4 +120,4 @@ for line in external_corpus_raw:
     
 fc = MarkovModel("fc", FullCorpus.listOfLines, smooth_param=0.5)
 jane = MarkovModel("jane", external_corpus, smooth_param=1)
-print(fc.generate(100))
+print(fc.generate(20))

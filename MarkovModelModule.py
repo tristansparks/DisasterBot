@@ -3,6 +3,7 @@
 Created on Thu Dec  6 21:15:46 2018
 
 @author: Tristan Sparks
+@author: Mahyar Bayran
 """
 
 from nltk.tokenize import sent_tokenize
@@ -11,6 +12,7 @@ import numpy as np
 import os.path
 import string
 from random import randint
+import random
 
 def random_choice(options, probabilities, randomness=3):
     #sort probabilities in descending order and pick with probability 1/randomness
@@ -20,10 +22,21 @@ def random_choice(options, probabilities, randomness=3):
 
     sorted_by_value = sorted(d.items(), key=lambda kv: kv[1], reverse=True)
     
+    cumm_sorted = [0]
+    for i in range(0, len(sorted_by_value)):
+        cumm_sorted.append(cumm_sorted[-1] + sorted_by_value[i][1])
+    
+    random_num = random.uniform(0, 1)
+    
+    for i in range(0, len(sorted_by_value)):
+        if ( (random_num >= cumm_sorted[i]) & (random_num<= cumm_sorted[i+1]) ):
+            index = i
+            break
+    '''
     index = 0
     while(randint(0, randomness) != 0):
         index += 1
-        
+    ''' 
     return sorted_by_value[index][0]
     
 
