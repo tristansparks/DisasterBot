@@ -321,8 +321,7 @@ class NormalizedComboMarkovModel:
             
         return generated_sent
     
-    
-def softmax(X, theta = 1.0, axis = None):
+def softmax(X, theta = 45, axis = None):
     """
     Compute the softmax of each element along an axis of X.
 
