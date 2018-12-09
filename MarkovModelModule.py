@@ -37,7 +37,15 @@ def random_choice(options, probabilities):
     return sorted_by_value[index][0]
     
 # for n = 3, this takes >5 minutes and approximately 4*wordcount MB of RAM
-class MarkovModel:    
+class MarkovModel:
+    '''
+    This is a standard markov model
+    INDEX:
+        name - string name
+        listOfLines - a list of the lines to be markovised
+        n - bigram model, markov order = n - 1
+        smooth_param - smoothing parameter, by add-delta smoothing
+    '''
     def __init__(self, name, listOfLines, n, smooth_param=1):
         self.name = name
         self.listOfLines = listOfLines
@@ -108,6 +116,7 @@ class MarkovModel:
         # how to pick seed words for n=3?
         first_word = random_choice(words, self.initial_dist)
         generated_sent = [first_word]
+        
         if (self.n == 3):
             # for now pick second word from random line that begins with the first word
             lines = []
@@ -149,26 +158,25 @@ class WeightedComboMarkovModel:
         weight - the weight of distributions from the primary model
     '''
     def __init__(self, primaryMM, externalMM, weight):
-        if (externalMM.n != n or primaryMM.n != n):
+        if (externalMM.n != primaryMM.n):
             print("primary and external corpora must be of same order")
             return
 
         self.primaryMM = primaryMM
         self.externalMM = externalMM
-        self.n = n
+        self.n = primaryMM.n
         self.weight = weight
         self.states = {}
+        self.wordCount = 0
         
-        index = 0
         for word in primaryMM.states.keys():
-            self.states[word] = index
-            index += 1
+            self.states[word] = self.wordCount
+            self.wordCount += 1
         for word in externalMM.states.keys():
             if word not in self.states.keys():
-                self.states[word] = index
-                index += 1
+                self.states[word] = self.wordCount
+                self.wordCount += 1
 
-        self.wordCount = len(self.states)
         self.shape = [ self.wordCount for _ in range(self.n) ]
         self.initial_dist = np.zeros(self.wordCount)
         self.transition = np.zeros(self.shape)
@@ -176,10 +184,45 @@ class WeightedComboMarkovModel:
         self.calc_transition()
         
     def calc_initial(self):
-        print()
+        self.initial_dist = np.zeros(len(self.states))
+        for word, index in self.states.items():
+            if word in self.primaryMM.states.keys():
+                i1 = self.primaryMM.initial_dist[self.primaryMM.states[word]]
+            else:
+                i1 = 0
+            if word in self.externalMM.states.keys():
+                i2 = self.externalMM.initial_dist[self.externalMM.states[word]]
+            else:
+                i2 = 0  
+            
+            self.initial_dist[index] = i1 * self.weight + i2 * (1 - self.weight)
+            
         
-    def calc_transition(self):        
-        print()
+    def calc_transition(self):
+        self.transition = np.zeros( (len(self.states), len(self.states)) )
+        
+        for word1, index1 in self.states.items():
+            for word2, index2 in self.states.items():
+                if (self.n == 2):
+                    if (word1 in self.primaryMM.states.keys() and word2 in self.primaryMM.states.keys()):
+                        t1 = self.primaryMM.transition[self.primaryMM.states[word1]][self.primaryMM.states[word2]]
+                    else:
+                        t1 = 0
+                    if (word1 in self.externalMM.states.keys() and word2 in self.externalMM.states.keys()):
+                        t2 = self.externalMM.transition[self.externalMM.states[word1]][self.externalMM.states[word2]]
+                    else:
+                        t2 = 0
+                    
+                    
+                    if (word1 not in self.primaryMM.states.keys()):
+                        self.transition[index1][index2] = t2
+                    elif (word1 not in self.externalMM.states.keys()):
+                        self.transition[index1][index2] = t1
+                    else:
+                        self.transition[index1][index2] = t1 * self.weight + t2 * (1 - self.weight)
+       
+                if (self.n == 3):
+                    print("I need to sleep do this tomorrow")
                     
     def generate(self, word_limit=20, overflow_allowed=20):
         end_tokens = [".", "?", "!"]
@@ -272,7 +315,7 @@ class NormalizedComboMarkovModel:
                         if (word1 in self.externalMM.states.keys() and word2 in self.externalMM.states.keys() and word3 in self.externalMM.states.keys()):
                             self.transition[index1][index2][index3] += self.external_weight * self.externalMM.transition[self.externalMM.states[word1]][self.externalMM.states[word2]][self.externalMM.states[word3]]
         
-        # Normalize
+        # Normalize - maybe just normalize external probabilities and then weight and add them
         if (self.n == 2):
             for i in range(len(self.transition)):
                 self.transition[i] = softmax(self.transition[i])
