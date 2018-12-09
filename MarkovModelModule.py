@@ -7,6 +7,7 @@ Created on Thu Dec  6 21:15:46 2018
 """
 
 from nltk.tokenize import sent_tokenize
+from nltk.util import ngrams
 
 import numpy as np 
 import os.path
@@ -14,7 +15,7 @@ import string
 from random import randint
 import random
 
-def random_choice(options, probabilities, randomness=3):
+def random_choice(options, probabilities):
     #sort probabilities in descending order and pick with probability 1/randomness
     d = {}
     for i in range(len(options)):
@@ -37,55 +38,64 @@ def random_choice(options, probabilities, randomness=3):
     while(randint(0, randomness) != 0):
         index += 1
     ''' 
-    print(index)
+    #print(index)
     return sorted_by_value[index][0]
     
+def get_ngrams(tokens, n):
+
+    return list(ngrams(tokens, n))
 
 class MarkovModel:
 
-    def __init__(self, name, listOfLines, smooth_param=1):
+    def __init__(self, name, listOfLines, n, smooth_param=1):
         self.name = name
         self.states = {} #a mapping from the word to number (index of the word in states vector)
         self.listOfLines = listOfLines
-        self.wordCount = 0
+        self.ngramCount = 0
         self.counts = {}
-        
+        self.n = n
         
         # create mapping for states
-        for line in listOfLines:
-            for w in line:
-                if w not in list(self.states.keys()): #new word found
-                    self.states[w] = self.wordCount
-                    self.wordCount += 1
-                    self.counts[w] = 0
-                self.counts[w] += 1
-                    
+        for line in self.listOfLines:
+            line_grams = get_ngrams(line, self.n) # list of tuples
+            for gram in line_grams:
+                if gram not in list(self.states.keys()): #new state found
+                    self.states[gram] = self.ngramCount
+                    self.ngramCount += 1
+                    self.counts[gram] = 0
+                self.counts[gram] += 1
+
         self.calc_initial(smooth_param)
         self.calc_transition(smooth_param)
         
     # with mappings we can easily build initial distributions and transition matrix
     def calc_initial(self, smooth_param=0):
         #### For Initial_dist, keep a list of possible first words and then cound and normalize
-        self.initial_dist = np.zeros( self.wordCount ) # same length as states
+        self.initial_dist = np.zeros( self.ngramCount ) # same length as states
 
         for line in self.listOfLines:
-            self.initial_dist[self.states[line[0]]] += 1 
+            line_grams = get_ngrams(line, self.n)
+            if (line_grams != [] ):
+                first_gram = line_grams[0]
+                self.initial_dist[ self.states[first_gram] ] += 1 
             
         self.initial_dist = np.array( [ elem + smooth_param for elem in self.initial_dist ] )
         self.initial_dist /= ( len(self.initial_dist) * smooth_param + len(self.listOfLines) )
     
     def calc_transition(self, smooth_param=0):
-        self.transition = np.zeros( (self.wordCount, self.wordCount) ) # Transition probabilities
+        self.transition = np.zeros( (self.ngramCount, self.ngramCount) ) # Transition probabilities
         
         for line in self.listOfLines:
-            for i in range(len(line) - 1):
-                self.transition[ self.states[line[i]], self.states[line[i+1]] ] += 1
+            line_grams = get_ngrams(line, self.n)
+            if (line_grams != []):
+                for i in range(len(line_grams) - 1):
+                    self.transition[ self.states[line_grams[i]], self.states[line_grams[i+1]] ] += 1
                 
         for i in range(len(self.transition)):
             corpus_size = self.transition[i].sum()
                 
             self.transition[i] = [ elem + smooth_param for elem in self.transition[i] ]
-            self.transition[i] /= ( corpus_size + smooth_param * self.wordCount)
+            self.transition[i] /= ( corpus_size + smooth_param * self.ngramCount)
                     
     def write_info(self, file):
         file.write('States: \n'+ str(list(self.states.items())) +'\n\n\n')
@@ -98,33 +108,32 @@ class MarkovModel:
         end_tokens = [".", "?", "!"]
         absolute_max = word_limit + 20
         
-        words = [0 for _ in range(len(self.states))]
-        
-        for elem in self.states.items():
-            words[elem[1]] = elem[0]
+        #grams = [0 for _ in range(len(self.states))]
+        #for elem in self.states.items():
+        #    gram[elem[1]] = elem[0]
+
+        grams = list(self.states.keys())
     
-        first_word = np.random.choice(words, p=self.initial_dist)
+        first_gram = random_choice(grams, self.initial_dist)
         
-        generated_sent = [first_word]
+        generated_sent = list(first_gram)
         
-        prev = first_word
-        for _ in range(word_limit - 1):
+        prev = first_gram
+        for _ in range(word_limit - self.n+1):
             probs = self.transition[self.states[prev]]
-            new = random_choice(words, probs)
-            generated_sent.append(new)
-            
+            new = random_choice(grams, probs)
+            generated_sent.append(new[-1])          
             prev = new
             
-        while(new not in end_tokens and absolute_max > 0):
+        while(new[-1] not in end_tokens and absolute_max > 0):
             absolute_max -= 1
             probs = self.transition[self.states[prev]]
-            new = random_choice(words, probs)
-            generated_sent.append(new)
-            
+            new = random_choice(grams, probs)
+            generated_sent.append(new[-1])     
             prev = new
             
         return generated_sent
-        
+    '''
     def generate_deterministic(self, word_limit=20):
         end_tokens = [".", "?", "!"]
         
@@ -151,7 +160,7 @@ class MarkovModel:
             prev = new
             
         return generated_sent      
-
+'''
 #######Both of these might be stupid########################
 class WeightedMarkovModel:
     def __init__(self, name, listOfLines, externalCorpus):
@@ -300,13 +309,13 @@ class ComboMarkovModel:
         
     def calc_initial(self):
         self.initial_dist = np.zeros(len(self.states))
-        for word, index in self.states.items():
-            if word in self.mm1.states.keys():
-                i1 = self.mm1.initial_dist[self.mm1.states[word]]
+        for gram, index in self.states.items():
+            if gram in self.mm1.states.keys():
+                i1 = self.mm1.initial_dist[self.mm1.states[gram]]
             else:
                 i1 = 0
-            if word in self.mm2.states.keys():
-                i2 = self.mm2.initial_dist[self.mm2.states[word]]
+            if gram in self.mm2.states.keys():
+                i2 = self.mm2.initial_dist[self.mm2.states[gram]]
             else:
                 i2 = 0  
             
@@ -316,22 +325,22 @@ class ComboMarkovModel:
     def calc_transition(self):
         self.transition = np.zeros( (len(self.states), len(self.states)) )
         
-        for word1, index1 in self.states.items():
+        for gram1, index1 in self.states.items():
            # print("w1: ", word1)
-            for word2, index2 in self.states.items():
-                if (word1 in self.mm1.states.keys() and word2 in self.mm1.states.keys()):
-                    t1 = self.mm1.transition[self.mm1.states[word1]][self.mm1.states[word2]]
+            for gram2, index2 in self.states.items():
+                if (gram1 in self.mm1.states.keys() and gram2 in self.mm1.states.keys()):
+                    t1 = self.mm1.transition[self.mm1.states[gram1]][self.mm1.states[gram2]]
                 else:
                     t1 = 0
-                if (word1 in self.mm2.states.keys() and word2 in self.mm2.states.keys()):
-                    t2 = self.mm2.transition[self.mm2.states[word1]][self.mm2.states[word2]]
+                if (gram1 in self.mm2.states.keys() and gram2 in self.mm2.states.keys()):
+                    t2 = self.mm2.transition[self.mm2.states[gram1]][self.mm2.states[gram2]]
                 else:
                     t2 = 0
                 
                 
-                if (word1 not in self.mm1.states.keys()):
+                if (gram1 not in self.mm1.states.keys()):
                     self.transition[index1][index2] = t2
-                elif (word1 not in self.mm2.states.keys()):
+                elif (gram1 not in self.mm2.states.keys()):
                     self.transition[index1][index2] = t1
                 else:
                     self.transition[index1][index2] = t1 * self.weight + t2 * (1 - self.weight)
@@ -341,29 +350,28 @@ class ComboMarkovModel:
         end_tokens = [".", "?", "!"]
         absolute_max = word_limit + 20
         
-        words = [0 for _ in range(len(self.states))]
-        
-        for elem in self.states.items():
-            words[elem[1]] = elem[0]
+        #grams = [0 for _ in range(len(self.states))]
+        #for elem in self.states.items():
+        #    gram[elem[1]] = elem[0]
+
+        grams = list(self.states.keys())
     
-        first_word = np.random.choice(words, p=self.initial_dist)
+        first_gram = random_choice(grams, self.initial_dist)
         
-        generated_sent = [first_word]
+        generated_sent = list(first_gram)
         
-        prev = first_word
-        for _ in range(word_limit - 1):
+        prev = first_gram
+        for _ in range(word_limit):
             probs = self.transition[self.states[prev]]
-            new = random_choice(words, probs)
-            generated_sent.append(new)
-            
+            new = random_choice(grams, probs)
+            generated_sent.append(new[-1])          
             prev = new
             
-        while(new not in end_tokens and absolute_max > 0):
+        while(new[-1] not in end_tokens and absolute_max > 0):
             absolute_max -= 1
             probs = self.transition[self.states[prev]]
-            new = random_choice(words, probs)
-            generated_sent.append(new)
-            
+            new = random_choice(grams, probs)
+            generated_sent.append(new[-1])     
             prev = new
             
         return generated_sent

@@ -119,7 +119,7 @@ for line in external_corpus_raw:
     if (new_line != []):
         external_corpus.append(new_line)
     
-fc = MarkovModel("fc", FullCorpus.listOfLines, smooth_param=0.0001)
+fc = MarkovModel("fc", FullCorpus.listOfLines, 3, smooth_param=0.0001)
 #jane = MarkovModel("jane", external_corpus, smooth_param=1)
 #print(fc.generate(20))
 
@@ -169,8 +169,11 @@ for e in external:
     for l in e:
         all_external.append(l)
         
-ex = MarkovModel("ex", all_external, 0.0001)
+ex = MarkovModel("ex", all_external, 3, 0.0000001)
 
-combo = ComboMarkovModel(fc, ex, 0.9)
-
-print(combo.generate(100))
+mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 3, 0.0000001)
+print(mm.generate(50))
+#combo = ComboMarkovModel(fc, ex, 0.9)
+combo = ComboMarkovModel(mm, ex, 0.9)
+print('hi')
+print(combo.generate(50))

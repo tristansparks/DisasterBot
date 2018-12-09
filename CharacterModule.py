@@ -31,7 +31,7 @@ class Character:
             self.listOfLines.append(newlines) #a list of lists
             
     def BuildAMarkovModel(self):
-        self.MM = MarkovModel(self.name, self.listOfLines)
+        self.MM = MarkovModel(self.name, self.listOfLines, 2, 0.00001)
 
     def write_info(self):
         filename = "%s.txt"%self.name
