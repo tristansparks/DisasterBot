@@ -13,7 +13,7 @@ from CharacterModule import Character
 from MarkovModelModule import MarkovModel, WeightedMarkovModel, ComboMarkovModel
 
 from nltk.corpus import gutenberg
-from Classifier import find_similar_scripts
+from Classifier import find_similar_scripts, Perplexity
 
 ######### PRE-PROCESSING ###################
 
@@ -85,7 +85,6 @@ charNames = []
 Characters = {}
 
 FullCorpus = Character("full")
-external_corpus_raw = gutenberg.sents('bryant-stories.txt')[10:-1]
 
 punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
 end_tokens = [".", "?", "!"]
@@ -118,62 +117,56 @@ for line in external_corpus_raw:
      
     if (new_line != []):
         external_corpus.append(new_line)
-    
-fc = MarkovModel("fc", FullCorpus.listOfLines, 3, smooth_param=0.0001)
-#jane = MarkovModel("jane", external_corpus, smooth_param=1)
-#print(fc.generate(20))
 
 scripts = ['Goodfellas.1990.txt', 'Love.And.Other.Drugs.txt', 'Notting.Hill.1999.txt', 'The.Notebook.2004.txt', 'Eternal.Sunshine.Of.The.Spotless.Mind.txt', 'Blue.Valentine.2010.txt', 'Sweet.November.2001.txt', '500.Days.of.Summer.2009.txt', 'One.Flew.Over.the.Cuckoos.Nest.txt', 'Sliding.Doors.txt']
 
 external_raw = []
-for script in scripts:
-    file = open('cleanedSRT/'+script, 'r')
-    external_raw.append(file.readlines())
-    file.close()
+#for script in scripts:
+#    file = open('cleanedSRT/'+script, 'r')
+#    external_raw.append(file.readlines())
+#    file.close()
     
 external = []
 
 punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
 end_tokens = [".", "?", "!"]
 
-for s in external_raw[0]:
-    sentences = []
-    
-    # I think dividing into sentences was a mistake
-    raw_sentences = sent_tokenize(s)
-    for raw_sent in raw_sentences:
-        sent = []
-        
-        # tokenize sentences by hand because NLTK doesn't like words like "gonna"
-        # which will obviously be used FREQUENTLY for our purposes
-        words = raw_sent.split(" ")
-        table = str.maketrans('', '', punctuation)
-        stripped = [w.translate(table) for w in words]
-        
-        for word in stripped:
-            if (word not in string.punctuation):
-                if (True in [word.strip().endswith(c) for c in end_tokens]):
-                    end_char = word.strip()[-1]
-                    sent.append(word.strip()[:-1].lower())
-                    sent.append(end_char)
-                else:
-                    sent.append(word.strip().lower())
-                
-        if (sent != []):
-            sentences.append(sent)
-    external.append(sentences)
+#for s in external_raw[0]:
+#    sentences = []
+#    
+#    # I think dividing into sentences was a mistake
+#    raw_sentences = sent_tokenize(s)
+#    for raw_sent in raw_sentences:
+#        sent = []
+#        
+#        # tokenize sentences by hand because NLTK doesn't like words like "gonna"
+#        # which will obviously be used FREQUENTLY for our purposes
+#        words = raw_sent.split(" ")
+#        table = str.maketrans('', '', punctuation)
+#        stripped = [w.translate(table) for w in words]
+#        
+#        for word in stripped:
+#            if (word not in string.punctuation):
+#                if (True in [word.strip().endswith(c) for c in end_tokens]):
+#                    end_char = word.strip()[-1]
+#                    sent.append(word.strip()[:-1].lower())
+#                    sent.append(end_char)
+#                else:
+#                    sent.append(word.strip().lower())
+#                
+#        if (sent != []):
+#            sentences.append(sent)
+#    external.append(sentences)
+#
+#all_external = []
+#
+#for e in external:
+#    for l in e:
+#        all_external.append(l)
+#        
+#ex = MarkovModel("ex", all_external, 3, 0.0000001)
+fc = MarkovModel("fc", FullCorpus.listOfLines, 3, smooth_param=0.0000001)
 
-all_external = []
 
-for e in external:
-    for l in e:
-        all_external.append(l)
-        
-ex = MarkovModel("ex", all_external, 3, 0.0000001)
-
-mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 3, 0.0000001)
-print(mm.generate(50))
-#combo = ComboMarkovModel(fc, ex, 0.9)
-combo = ComboMarkovModel(mm, ex, 0.9)
-print('hi')
-print(combo.generate(50))
+#mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 3, 0.00001)
+print(fc.generate())

@@ -32,113 +32,130 @@ def random_choice(options, probabilities):
     for i in range(len(sorted_by_value)):
         if ( (random_num >= cumm_sorted[i]) & (random_num <= cumm_sorted[i+1]) ):
             index = i
-            print(index)
             break
 
     return sorted_by_value[index][0]
     
-class MarkovModel:    
+def get_ngrams(tokens, n):
+
+    return list(ngrams(tokens, n))
+
+class MarkovModel:
+
     def __init__(self, name, listOfLines, n, smooth_param=1):
         self.name = name
+        self.states = {} #a mapping from the word to number (index of the word in states vector)
         self.listOfLines = listOfLines
+        self.ngramCount = 0
+        self.counts = {}
         self.n = n
-        self.smooth_param = smooth_param
-        self.states = {}
-        self.wordCount = 0
         
-        # initialize states, map from word to index of word in distributions for convienence
-        for line in listOfLines:
-            for word in line:
-                if (word not in self.states.keys()):
-                    self.states[word] = self.wordCount
-                    self.wordCount += 1
-
-        print("wordcount ", self.wordCount)
-        self.shape = [ self.wordCount for _ in range(self.n) ]
-        self.initial_dist = np.zeros(self.wordCount)
-        self.transition = np.zeros(self.shape)
-        self.calc_initial()
-        self.calc_transition()
-        
-    def calc_initial(self):
+        # create mapping for states
         for line in self.listOfLines:
-            self.initial_dist[self.states[line[0]]] += 1 
+            line_grams = get_ngrams(line, self.n) # list of tuples
+            for gram in line_grams:
+                if gram not in list(self.states.keys()): # new state found
+                    self.states[gram] = self.ngramCount
+                    self.ngramCount += 1
+                    self.counts[gram] = 0
+                self.counts[gram] += 1
+
+        self.calc_initial(smooth_param)
+        self.calc_transition(smooth_param)
+        
+    # with mappings we can easily build initial distributions and transition matrix
+    def calc_initial(self, smooth_param=0):
+        #### For Initial_dist, keep a list of possible first words and then cound and normalize
+        self.initial_dist = np.zeros( self.ngramCount ) # same length as states
+
+        for line in self.listOfLines:
+            line_grams = get_ngrams(line, self.n)
+            if (line_grams != [] ):
+                first_gram = line_grams[0]
+                self.initial_dist[ self.states[first_gram] ] += 1 
             
-        self.initial_dist = np.array([ elem + self.smooth_param for elem in self.initial_dist ])
-        self.initial_dist /= ( len(self.initial_dist) * self.smooth_param + len(self.listOfLines) )
+        self.initial_dist = np.array( [ elem + smooth_param for elem in self.initial_dist ] )
+        self.initial_dist /= ( len(self.initial_dist) * smooth_param + len(self.listOfLines) )
+    
+    def calc_transition(self, smooth_param=0):
+        self.transition = np.zeros( (self.ngramCount, self.ngramCount) ) # Transition probabilities
         
-    def calc_transition(self):
-        # First Order Markov
-        if (self.n == 2):
-            for line in self.listOfLines:
-                for i in range(len(line) - (self.n - 1)):
-                    self.transition[self.states[line[i]]][self.states[line[i+1]]] += 1
-            for i in range(len(self.transition)):
-                corpus_size = self.transition[i].sum() # corpus size is the # pairs of states where i is the first element in the pair
-                self.transition[i] = [ elem + self.smooth_param for elem in self.transition[i] ]
-                self.transition[i] /= ( corpus_size + self.smooth_param * self.wordCount)
-        
-        # Second Order Markov
-        elif (self.n == 3):
-            for line in self.listOfLines:
-                for i in range(len(line) - (self.n - 1)):
-                    self.transition[self.states[line[i]]][self.states[line[i+1]]][self.states[line[i+2]]] += 1
-            for i in range(self.wordCount):
-                for j in range(self.wordCount):
-                    corpus_size = self.transition[i][j].sum() # corpus size is the # triplets of states where i,j are the first elements in the triplet
-                    self.transition[i][j] = [ elem + self.smooth_param for elem in self.transition[i][j] ]
-                    self.transition[i][j] /= ( corpus_size + self.smooth_param * self.wordCount)
-        else:
-            print("n must be 2 or 3")
-            return
-        
+        for line in self.listOfLines:
+            line_grams = get_ngrams(line, self.n)
+            if (line_grams != []):
+                for i in range(len(line_grams) - 1):
+                    self.transition[ self.states[line_grams[i]], self.states[line_grams[i+1]] ] += 1
+                
+        for i in range(len(self.transition)):
+            corpus_size = self.transition[i].sum()
+                
+            self.transition[i] = [ elem + smooth_param for elem in self.transition[i] ]
+            self.transition[i] /= ( corpus_size + smooth_param * self.ngramCount)
+                    
     def write_info(self, file):
         file.write('States: \n'+ str(list(self.states.items())) +'\n\n\n')
         file.write('Initial Distributions: \n' + str(self.initial_dist.tolist()) + '\n\n\n')
         file.write('Transition Probabilities: \n' + str(self.transition.tolist() )+ '\n\n\n')
         
         
-    def generate(self, word_limit=20, overflow_allowed=20):
+    def generate(self, word_limit=20):
+        
+        end_tokens = [".", "?", "!"]
+        absolute_max = word_limit + 20
+        
+        #grams = [0 for _ in range(len(self.states))]
+        #for elem in self.states.items():
+        #    gram[elem[1]] = elem[0]
+
+        grams = list(self.states.keys())
+    
+        first_gram = random_choice(grams, self.initial_dist)
+        
+        generated_sent = list(first_gram)
+        
+        prev = first_gram
+        for _ in range(word_limit - self.n+1):
+            probs = self.transition[self.states[prev]]
+            new = random_choice(grams, probs)
+            generated_sent.append(new[-1])          
+            prev = new
+            
+        while(new[-1] not in end_tokens and absolute_max > 0):
+            absolute_max -= 1
+            probs = self.transition[self.states[prev]]
+            new = random_choice(grams, probs)
+            generated_sent.append(new[-1])     
+            prev = new
+            
+        return generated_sent
+    '''
+    def generate_deterministic(self, word_limit=20):
         end_tokens = [".", "?", "!"]
         
         words = [0 for _ in range(len(self.states))]
+        
         for elem in self.states.items():
             words[elem[1]] = elem[0]
+    
+        first_word = np.random.choice(words, p=self.initial_dist)
         
-        # how to pick seed words for n=3?
-        first_word = random_choice(words, self.initial_dist)
         generated_sent = [first_word]
-        if (self.n == 3):
-            # for now pick second word from random line that begins with the first word
-            lines = []
-            for line in self.listOfLines:
-                if (line[0] == first_word):
-                    lines.append(line)
-                    
-            line = random.choice(lines)
-            generated_sent.append(line[1])
         
-        for i in range(self.n - 1, word_limit):
-            if (self.n == 2):
-                probs = self.transition[self.states[generated_sent[i-1]]]
-            elif (self.n == 3):
-                probs = self.transition[self.states[generated_sent[i-2]]][self.states[generated_sent[i-1]]]
+        prev = first_word
+        for _ in range(word_limit - 1):
+            new = words[self.transition[self.states[prev]].tolist().index(max(self.transition[self.states[prev]]))]
+            generated_sent.append(new)
             
-            generated_sent.append(random_choice(words, probs))
+            prev = new
             
-        i = word_limit
-        while(generated_sent[-1] not in end_tokens and len(generated_sent) <= word_limit + overflow_allowed):
-            if (self.n == 2):
-                probs = self.transition[self.states[generated_sent[i-1]]]
-            elif (self.n == 3):
-                probs = self.transition[self.states[generated_sent[i-2]]][self.states[generated_sent[i-1]]]
+        while(new not in end_tokens):
+            new = words[self.transition[self.states[prev]].tolist().index(max(self.transition[self.states[prev]]))]
+            generated_sent.append(new)
             
-            generated_sent.append(random_choice(words, probs))
-            i += 1
+            prev = new
             
-        return generated_sent
-
-
+        return generated_sent      
+'''
 #######Both of these might be stupid########################
 class WeightedMarkovModel:
     def __init__(self, name, listOfLines, externalCorpus):
