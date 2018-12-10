@@ -169,11 +169,11 @@ for e in external:
     for l in e:
         all_external.append(l)
         
-ex = MarkovModel("ex", all_external, 3, 0.0000001)
+ex = MarkovModel("ex", all_external, 2, 0)
 
-mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 3, 0.0000001)
+mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 2, 0)
 print(mm.generate(50))
 #combo = ComboMarkovModel(fc, ex, 0.9)
-combo = ComboMarkovModel(mm, ex, 0.9)
-print('hi')
+combo = ComboMarkovModel(mm, ex, 0.7)
+
 print(combo.generate(50))

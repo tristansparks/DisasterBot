@@ -28,26 +28,24 @@ def random_choice(options, probabilities):
         cumm_sorted.append(cumm_sorted[-1] + sorted_by_value[i][1])
     
     random_num = random.uniform(0, 1)
-    
+
+    ind  = 0
     for i in range(len(sorted_by_value)):
         if ( (random_num >= cumm_sorted[i]) & (random_num <= cumm_sorted[i+1]) ):
-            index = i
+            ind = i
             break
-    '''
-    index = 0
-    while(randint(0, randomness) != 0):
-        index += 1
-    ''' 
-    #print(index)
-    return sorted_by_value[index][0]
-    
+
+    return sorted_by_value[ind][0]
+
+
 def get_ngrams(tokens, n):
 
     return list(ngrams(tokens, n))
 
+
 class MarkovModel:
 
-    def __init__(self, name, listOfLines, n, smooth_param=1):
+    def __init__(self, name, listOfLines, n, smooth_param=0):
         self.name = name
         self.states = {} #a mapping from the word to number (index of the word in states vector)
         self.listOfLines = listOfLines
@@ -72,15 +70,17 @@ class MarkovModel:
     def calc_initial(self, smooth_param=0):
         #### For Initial_dist, keep a list of possible first words and then cound and normalize
         self.initial_dist = np.zeros( self.ngramCount ) # same length as states
-
+        
         for line in self.listOfLines:
             line_grams = get_ngrams(line, self.n)
             if (line_grams != [] ):
                 first_gram = line_grams[0]
-                self.initial_dist[ self.states[first_gram] ] += 1 
-            
-        self.initial_dist = np.array( [ elem + smooth_param for elem in self.initial_dist ] )
-        self.initial_dist /= ( len(self.initial_dist) * smooth_param + len(self.listOfLines) )
+                self.initial_dist[ self.states[first_gram] ] += 1
+                
+        total = self.initial_dist.sum()
+        if (  (total> 0) | (smooth_param > 0) ):    
+            self.initial_dist = np.array( [ elem + smooth_param for elem in self.initial_dist ] )
+            self.initial_dist /= ( total + (len(self.initial_dist)*smooth_param) )
     
     def calc_transition(self, smooth_param=0):
         self.transition = np.zeros( (self.ngramCount, self.ngramCount) ) # Transition probabilities
@@ -93,9 +93,9 @@ class MarkovModel:
                 
         for i in range(len(self.transition)):
             corpus_size = self.transition[i].sum()
-                
-            self.transition[i] = [ elem + smooth_param for elem in self.transition[i] ]
-            self.transition[i] /= ( corpus_size + smooth_param * self.ngramCount)
+            if ( (corpus_size > 0) | (smooth_param > 0) ):
+                self.transition[i] = [ elem + smooth_param for elem in self.transition[i] ]
+                self.transition[i] /= ( corpus_size + (smooth_param*self.ngramCount) )
                     
     def write_info(self, file):
         file.write('States: \n'+ str(list(self.states.items())) +'\n\n\n')
