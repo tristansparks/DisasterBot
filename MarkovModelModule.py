@@ -35,6 +35,7 @@ def random_choice(options, probabilities):
             index = i
             break
 
+    print(index)
     return sorted_by_value[index][0]
     
 # for n = 3, this takes >5 minutes and approximately 4*wordcount MB of RAM
@@ -62,7 +63,6 @@ class MarkovModel:
                     self.states[word] = self.wordCount
                     self.wordCount += 1
 
-        print("wordcount ", self.wordCount)
         self.shape = [ self.wordCount for _ in range(self.n) ]
         self.initial_dist = np.zeros(self.wordCount)
         self.transition = np.zeros(self.shape)
@@ -158,7 +158,7 @@ class WeightedComboMarkovModel:
     INPUTS:
         primaryMM - the primary corpus markov model
         externalMM - the external markov model 
-        weight - the weight of distributions from the primary model
+        weight - the weight attributed to the primary corpus (float between 0 and 1 (incl))
     '''
     def __init__(self, primaryMM, externalMM, weight):
         if (externalMM.n != primaryMM.n):
@@ -288,8 +288,8 @@ class WeightedComboMarkovModel:
 class NormalizedComboMarkovModel:
     '''
     This model takes two Markov Models,
-    and adds the corresponding external initial and transition probabilities to 
-    the primary distributions. We then normalize using softmax
+    and combines their initial and transition distributions, however, only external
+    information corresponding to words in the primary corpus is used 
     INPUTS:
         primaryMM - the primary corpus markov model
         externalMM - the external markov model 
@@ -323,7 +323,6 @@ class NormalizedComboMarkovModel:
         
         # Combine with primary info
         self.initial_dist = self.initial_dist * self.weight + external_dist * (1 - self.weight)
-        print(self.initial_dist.sum())
         
     def calc_transition(self):  
         self.transition = self.primaryMM.transition
