@@ -158,18 +158,17 @@ for e in external:
     for l in e:
         all_external.append(l)
         
-ex = MarkovModel("ex", all_external, n=2, smooth_param=0.00001)
-fc = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0.00001)
+ex = MarkovModel("ex", all_external, n=2, smooth_param=0)
+#fc = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0)
+mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, n=2, smooth_param=0)
 
-combo = WeightedComboMarkovModel(fc, ex, weight=0.8)
+
+combo1 = WeightedComboMarkovModel(mm, ex, weight=0.7)
+combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.7)
 
 #plt.plot(fc.initial_dist)
 #plt.ylabel('Standard Markov Initial Dist')
 #plt.show()
-#
-#plt.plot(combo.initial_dist)
-#plt.ylabel('Normalized Initial Dist')
-#plt.show()
 
-print(combo.generate())
-#mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 3, 0.00001)
+print(combo1.generate())
+print(combo2.generate())
