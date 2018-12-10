@@ -48,6 +48,7 @@ class MarkovModel:
         n - bigram model, markov order = n - 1
         smooth_param - smoothing parameter, by add-delta smoothing
     '''
+
     def __init__(self, name, listOfLines, n, smooth_param=0):
         self.name = name
         self.listOfLines = listOfLines
