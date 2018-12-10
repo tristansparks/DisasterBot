@@ -6,14 +6,16 @@
 
 from nltk.tokenize import sent_tokenize
 
+import matplotlib.pyplot as plt
+
 import numpy as np 
 import os.path
 import string
 from CharacterModule import Character
-from MarkovModelModule import MarkovModel, WeightedMarkovModel, ComboMarkovModel
+from MarkovModelModule import MarkovModel, WeightedComboMarkovModel, NormalizedComboMarkovModel
 
 from nltk.corpus import gutenberg
-from Classifier import find_similar_scripts
+from Classifier import find_similar_scripts, Perplexity
 
 ######### PRE-PROCESSING ###################
 
@@ -77,15 +79,16 @@ def strip_line_no_sentences(line):
                 
     return name, sent
     
+############################# MAIN ############################################
 file_corpus = open('corpus.txt')
 corpus = file_corpus.readlines()
+file_corpus.close()
 
 # a list of character names
 charNames = []
 Characters = {}
 
 FullCorpus = Character("full")
-external_corpus_raw = gutenberg.sents('bryant-stories.txt')[10:-1]
 
 punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
 end_tokens = [".", "?", "!"]
@@ -108,20 +111,6 @@ for line in corpus:
 #for name in charNames:
 #    Characters[name].BuildAMarkovModel()
 #    Characters[name].write_info()
-
-external_corpus = []
-for line in external_corpus_raw:
-    new_line = []
-    for word in line:
-        if (word not in punctuation):
-            new_line.append(word.lower())
-     
-    if (new_line != []):
-        external_corpus.append(new_line)
-    
-fc = MarkovModel("fc", FullCorpus.listOfLines, 3, smooth_param=0.0001)
-#jane = MarkovModel("jane", external_corpus, smooth_param=1)
-#print(fc.generate(20))
 
 scripts = ['Goodfellas.1990.txt', 'Love.And.Other.Drugs.txt', 'Notting.Hill.1999.txt', 'The.Notebook.2004.txt', 'Eternal.Sunshine.Of.The.Spotless.Mind.txt', 'Blue.Valentine.2010.txt', 'Sweet.November.2001.txt', '500.Days.of.Summer.2009.txt', 'One.Flew.Over.the.Cuckoos.Nest.txt', 'Sliding.Doors.txt']
 
@@ -169,11 +158,20 @@ for e in external:
     for l in e:
         all_external.append(l)
         
-ex = MarkovModel("ex", all_external, 2, 0)
+ex = MarkovModel("ex", all_external, n=2, smooth_param=0)
+#fc = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0)
+mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, n=2, smooth_param=0)
 
-mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, 2, 0)
-print(mm.generate(50))
-#combo = ComboMarkovModel(fc, ex, 0.9)
-combo = ComboMarkovModel(mm, ex, 0.7)
 
-print(combo.generate(50))
+combo1 = WeightedComboMarkovModel(mm, ex, weight=0.8)
+combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.8)
+
+#plt.plot(fc.initial_dist)
+#plt.ylabel('Standard Markov Initial Dist')
+#plt.show()
+
+print(mm.generate())
+print(ex.generate())
+print(combo1.generate())
+print(combo2.generate())
+
