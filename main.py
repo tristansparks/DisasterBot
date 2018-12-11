@@ -15,7 +15,9 @@ from CharacterModule import Character
 from MarkovModelModule import MarkovModel, WeightedComboMarkovModel, NormalizedComboMarkovModel
 
 from nltk.corpus import gutenberg
-from Classifier import find_similar_scripts, Perplexity
+from Classifier import Perplexity
+from nltk.util import ngrams
+
 
 ######### PRE-PROCESSING ###################
 
@@ -80,6 +82,8 @@ def strip_line_no_sentences(line):
     return name, sent
     
 ############################# MAIN ############################################
+
+print("reading files")
 file_corpus = open('corpus.txt')
 corpus = file_corpus.readlines()
 file_corpus.close()
@@ -112,10 +116,11 @@ for line in corpus:
 #    Characters[name].BuildAMarkovModel()
 #    Characters[name].write_info()
 
-scripts = ['Goodfellas.1990.txt', 'Love.And.Other.Drugs.txt', 'Notting.Hill.1999.txt', 'The.Notebook.2004.txt', 'Eternal.Sunshine.Of.The.Spotless.Mind.txt', 'Blue.Valentine.2010.txt', 'Sweet.November.2001.txt', '500.Days.of.Summer.2009.txt', 'One.Flew.Over.the.Cuckoos.Nest.txt', 'Sliding.Doors.txt']
+best_scripts = [('Goodfellas.1990.txt', 0.29524089306698004), ('Prime_eng.txt', 0.26586368977673325), ('Love.And.Other.Drugs.txt', 0.2517626321974148), ('Notting.Hill.1999.txt', 0.24294947121034077), ('Selena.1997.txt', 0.23678025851938894), ('The.Notebook.2004.txt', 0.23325499412455933), ('Eternal.Sunshine.Of.The.Spotless.Mind.txt', 0.23237367802585193), ('Blue.Valentine.2010.txt', 0.23061104582843714), ('Sweet.November.2001.txt', 0.22943595769682726), ('Wicker.Park.2004.txt', 0.22032902467685075)]
+worst_scripts = [('August.Rush.2007.txt', 0.11339600470035252), ('Tristan.and.Isolde.2006.txt', 0.13072855464159813), ('Jane.Eyre.2011.txt', 0.13719153936545242), ('Firelight.1997.txt', 0.15481786133960046), ('Original.Sin.2001.txt', 0.15804935370152762), ('Drive.1997.txt', 0.15834312573443007), ('Tuck.Everlasting.txt', 0.1601057579318449), ('dakota-skye.txt', 0.1627497062279671), ('Seven.Samurai.1954.txt', 0.1636310223266745), ('The.Lake.House.2006.txt', 0.1653936545240893)]
 
 external_raw = []
-for script in scripts:
+for script, score in best_scripts:
     file = open('cleanedSRT/'+script, 'r')
     external_raw.append(file.readlines())
     file.close()
@@ -157,21 +162,34 @@ all_external = []
 for e in external:
     for l in e:
         all_external.append(l)
-        
+   
+print("generating models")     
 ex = MarkovModel("ex", all_external, n=2, smooth_param=0)
 #fc = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0)
 mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, n=2, smooth_param=0)
 
-
-combo1 = WeightedComboMarkovModel(mm, ex, weight=0.8)
-combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.8)
+combo1 = WeightedComboMarkovModel(mm, ex, weight=0.9)
+combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.9)
 
 #plt.plot(fc.initial_dist)
 #plt.ylabel('Standard Markov Initial Dist')
 #plt.show()
+markov_result = []
+weight_result = []
+normal_result = []
 
-print(mm.generate())
-print(ex.generate())
-print(combo1.generate())
-print(combo2.generate())
+print("Generating texts")
+for _ in range(200):
+    markov_result.append(mm.generate())
+    weight_result.append(combo1.generate())
+    normal_result.append(combo2.generate())
+    
+print("calculating markov perplexity")
+print("Markov Perplexity: ", Perplexity(ngrams(markov_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
+
+print("calculating weight perplexity")
+print("Weight Perplexity: ", Perplexity(ngrams(weight_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
+
+print("calculating normal perplexity")
+print("Normal Perplexity: ", Perplexity(ngrams(normal_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
 

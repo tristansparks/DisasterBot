@@ -35,7 +35,6 @@ def random_choice(options, probabilities):
             index = i
             break
 
-    print(index)
     return sorted_by_value[index][0]
     
 # for n = 3, this takes >5 minutes and approximately 4*wordcount MB of RAM

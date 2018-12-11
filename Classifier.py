@@ -19,6 +19,7 @@ from nltk.metrics import BigramAssocMeasures
 from nltk.util import ngrams
 
 from nltk.stem import WordNetLemmatizer
+import numpy as np
 wordnet_lemmatizer = WordNetLemmatizer()
 stemmer = PorterStemmer()
     
@@ -34,6 +35,9 @@ def ROUGE(A, B):
 def Perplexity(A, B):
     # A: list of reference n-grams
     # B: list of system n-grams
+    A = list(np.flatten(np.array(A)))
+    B = list(np.flatten(np.array(B)))
+
     voc = set(A)
     voc = voc.union(set(B))
     p = {}
@@ -75,6 +79,7 @@ def get_bigrams(myString):
     
     result = [' '.join([wordnet_lemmatizer.lemmatize(w).lower() for w in x.split()]) \
               for x in tokens if x.lower() not in stopwords.words('english') and len(x) > 8]
+    
     return result
 
 def get_unigrams(myString):
@@ -88,16 +93,18 @@ def get_unigrams(myString):
 
 def find_similar_scripts(method, n_top):
     
+    print("finding scripts")
     ### clean the original and extract bigrams
     file = open('corpus.txt', 'r')
     corpus = file.readlines()
     file.close()
 
+    print("done reading files")
     unigrams_corpus = []
     bigrams_corpus = []
     for line in corpus:
         tmp = line.find(':')
-        text = line[tmp+2:].strip().lower()
+        text = line[tmp+2:].strip()
         text = remove_punc(text)
         unigrams_corpus += get_unigrams(text)
         bigrams_corpus += get_bigrams(text)
@@ -110,7 +117,7 @@ def find_similar_scripts(method, n_top):
     sorted_scores += names
     
     for name in names:
-        #print('checking: '+ name + '    ...')
+        print('checking: '+ name + '    ...')
         file = open('cleanedSRT/'+name, 'r')
         # there is one line only
         text = file.readline()
@@ -133,18 +140,10 @@ def find_similar_scripts(method, n_top):
             #print('---Perplexity Score: '+ str(scores[name]))
             
     # sort filenames by their scores
-    for i in range(0, len(scores.keys()) -1):
-        for j in range(i+1, len(scores.keys() )):
-            if scores[sorted_scores[j]] > scores[sorted_scores[i]]:
-                tmp = sorted_scores[j]
-                sorted_scores[j] = sorted_scores[i]
-                sorted_scores[i] = tmp
+    sorted_scores = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
+    return sorted_scores
 
-    #for name in sorted_scores:
-    #    print(name + ' :\t' + str(scores[name]))            
-    
-    return sorted_scores[0:n_top]
-
+#
 ## choose the method
 #method1 ='ROUGE'
 #method2 = 'PERPLEXITY'
@@ -152,5 +151,5 @@ def find_similar_scripts(method, n_top):
 #
 #print(' \nROUGE : \n' )
 #print(find_similar_scripts(method1, n_top))
-#print(' \nPerplexity : \n' )
-#print(find_similar_scripts(method2, n_top))
+##print(' \nPerplexity : \n' )
+##print(find_similar_scripts(method2, n_top))
