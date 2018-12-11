@@ -13,6 +13,7 @@ import os.path
 import string
 from CharacterModule import Character
 from MarkovModelModule import MarkovModel, WeightedComboMarkovModel, NormalizedComboMarkovModel
+from LSTM import LSTM_byChar
 
 from nltk.corpus import gutenberg
 from Classifier import Perplexity
@@ -165,11 +166,13 @@ for e in external:
    
 print("generating models")     
 ex = MarkovModel("ex", all_external, n=2, smooth_param=0)
+        
 #fc = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0)
 mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, n=2, smooth_param=0)
 
 combo1 = WeightedComboMarkovModel(mm, ex, weight=0.9)
 combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.9)
+
 
 #plt.plot(fc.initial_dist)
 #plt.ylabel('Standard Markov Initial Dist')
@@ -193,3 +196,24 @@ print("Weight Perplexity: ", Perplexity(ngrams(weight_result, 2), ngrams(Charact
 print("calculating normal perplexity")
 print("Normal Perplexity: ", Perplexity(ngrams(normal_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
 
+#print(mm.generate())
+#print(ex.generate())
+#print(combo1.generate())
+#print(combo2.generate())
+
+Johnny_text = ""
+for line in corpus:
+    a = line.index(':')
+    name = line[0:a]
+    l = line[a+2:]
+    if name == 'Johnny':
+        Johnny_text +=  l
+    
+A = LSTM_byChar(Johnny_text)
+
+
+
+
+
+
+    
