@@ -13,14 +13,20 @@ import os.path
 import string
 from CharacterModule import Character
 from MarkovModelModule import MarkovModel, WeightedComboMarkovModel, NormalizedComboMarkovModel
-from LSTM import LSTM_byChar
+#from LSTM import LSTM_byChar
 
 from nltk.corpus import gutenberg
-from Classifier import Perplexity
 from nltk.util import ngrams
 
 
 ######### PRE-PROCESSING ###################
+def ModelPerplexity(distribution):
+    exp = 0
+    for e in distribution:
+        if (e != 0):
+            exp += e*np.log2(e)
+    
+    return 2**(-1*exp)
 
 def strip_line_with_sentences(line):
     a = line.index(':')
@@ -174,42 +180,29 @@ combo1 = WeightedComboMarkovModel(mm, ex, weight=0.9)
 combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.9)
 
 
-#plt.plot(fc.initial_dist)
-#plt.ylabel('Standard Markov Initial Dist')
-#plt.show()
-markov_result = []
-weight_result = []
-normal_result = []
-
-print("Generating texts")
-for _ in range(200):
-    markov_result.append(mm.generate())
-    weight_result.append(combo1.generate())
-    normal_result.append(combo2.generate())
-    
 print("calculating markov perplexity")
-print("Markov Perplexity: ", Perplexity(ngrams(markov_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
+print("Markov Perplexity: ", ModelPerplexity(mm.initial_dist))
 
 print("calculating weight perplexity")
-print("Weight Perplexity: ", Perplexity(ngrams(weight_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
+print("Weight Perplexity: ", ModelPerplexity(combo1.initial_dist))
 
 print("calculating normal perplexity")
-print("Normal Perplexity: ", Perplexity(ngrams(normal_result, 2), ngrams(Characters['Johnny'].listOfLines, 2)))
+print("Normal Perplexity: ", ModelPerplexity(combo2.initial_dist))
 
-#print(mm.generate())
+print(mm.generate())
 #print(ex.generate())
-#print(combo1.generate())
-#print(combo2.generate())
+print(combo1.generate())
+print(combo2.generate())
 
-Johnny_text = ""
-for line in corpus:
-    a = line.index(':')
-    name = line[0:a]
-    l = line[a+2:]
-    if name == 'Johnny':
-        Johnny_text +=  l
-    
-A = LSTM_byChar(Johnny_text)
+#Johnny_text = ""
+#for line in corpus:
+#    a = line.index(':')
+#    name = line[0:a]
+#    l = line[a+2:]
+#    if name == 'Johnny':
+#        Johnny_text +=  l
+#    
+#A = LSTM_byChar(Johnny_text)
 
 
 

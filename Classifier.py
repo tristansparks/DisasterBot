@@ -35,11 +35,9 @@ def ROUGE(A, B):
 def Perplexity(A, B):
     # A: list of reference n-grams
     # B: list of system n-grams
-    A = list(np.flatten(np.array(A)))
-    B = list(np.flatten(np.array(B)))
-
     voc = set(A)
     voc = voc.union(set(B))
+    
     p = {}
     q = {}
     for w in voc:
@@ -144,12 +142,12 @@ def find_similar_scripts(method, n_top):
     return sorted_scores
 
 #
-## choose the method
+# choose the method
 #method1 ='ROUGE'
 #method2 = 'PERPLEXITY'
 #n_top = 10
 #
 #print(' \nROUGE : \n' )
 #print(find_similar_scripts(method1, n_top))
-##print(' \nPerplexity : \n' )
-##print(find_similar_scripts(method2, n_top))
+#print(' \nPerplexity : \n' )
+#print(find_similar_scripts(method2, n_top))
