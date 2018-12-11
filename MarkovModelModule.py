@@ -346,6 +346,7 @@ class NormalizedComboMarkovModel:
             for i in range(len(self.transition)):
                 external_dist[i] = softmax(external_weights[i]) #normalize
                 self.transition[i] = self.transition[i] * self.weight + external_dist[i] * (1 - self.weight)
+                
         elif (self.n == 3):
             for i in range(len(self.transition)):
                 for j in range(len(self.transition)):
@@ -393,7 +394,7 @@ class NormalizedComboMarkovModel:
             
         return generated_sent
     
-def softmax(X, theta = 45, axis = None):
+def softmax(X, theta = 1, axis = None):
     """
     Compute the softmax of each element along an axis of X.
 

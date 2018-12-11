@@ -24,9 +24,10 @@ def ModelPerplexity(distribution):
     exp = 0
     for e in distribution:
         if (e != 0):
-            exp += e*np.log2(e)
+            exp += np.log(1/e)
     
-    return 2**(-1*exp)
+    #return 2**(-exp/len(distribution))
+    return np.exp(exp/len(distribution))
 
 def strip_line_with_sentences(line):
     a = line.index(':')
@@ -125,9 +126,10 @@ for line in corpus:
 
 best_scripts = [('Goodfellas.1990.txt', 0.29524089306698004), ('Prime_eng.txt', 0.26586368977673325), ('Love.And.Other.Drugs.txt', 0.2517626321974148), ('Notting.Hill.1999.txt', 0.24294947121034077), ('Selena.1997.txt', 0.23678025851938894), ('The.Notebook.2004.txt', 0.23325499412455933), ('Eternal.Sunshine.Of.The.Spotless.Mind.txt', 0.23237367802585193), ('Blue.Valentine.2010.txt', 0.23061104582843714), ('Sweet.November.2001.txt', 0.22943595769682726), ('Wicker.Park.2004.txt', 0.22032902467685075)]
 worst_scripts = [('August.Rush.2007.txt', 0.11339600470035252), ('Tristan.and.Isolde.2006.txt', 0.13072855464159813), ('Jane.Eyre.2011.txt', 0.13719153936545242), ('Firelight.1997.txt', 0.15481786133960046), ('Original.Sin.2001.txt', 0.15804935370152762), ('Drive.1997.txt', 0.15834312573443007), ('Tuck.Everlasting.txt', 0.1601057579318449), ('dakota-skye.txt', 0.1627497062279671), ('Seven.Samurai.1954.txt', 0.1636310223266745), ('The.Lake.House.2006.txt', 0.1653936545240893)]
+all_scripts = os.listdir('cleanedSRT')
 
 external_raw = []
-for script, score in best_scripts:
+for script in all_scripts:
     file = open('cleanedSRT/'+script, 'r')
     external_raw.append(file.readlines())
     file.close()
@@ -194,6 +196,17 @@ print(mm.generate())
 print(combo1.generate())
 print(combo2.generate())
 
+delta_transition = []
+
+for row in range(len(mm.transition)):
+    delta_transition.append(combo2.transition[row] - mm.transition[row])
+    
+plt.plot(delta_transition[2])
+plt.ylabel('effect of normalization row 100')
+plt.show()
+#plt.plot(combo2.transition[100])
+#plt.ylabel('Normalized Initial Dist')
+#plt.show()
 #Johnny_text = ""
 #for line in corpus:
 #    a = line.index(':')
