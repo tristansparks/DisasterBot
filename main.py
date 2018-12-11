@@ -13,6 +13,7 @@ import os.path
 import string
 from CharacterModule import Character
 from MarkovModelModule import MarkovModel, WeightedComboMarkovModel, NormalizedComboMarkovModel
+from LSTM import LSTM_byChar
 
 from nltk.corpus import gutenberg
 from Classifier import find_similar_scripts, Perplexity
@@ -158,20 +159,36 @@ for e in external:
     for l in e:
         all_external.append(l)
         
-ex = MarkovModel("ex", all_external, n=2, smooth_param=0)
+#ex = MarkovModel("ex", all_external, n=2, smooth_param=0)
 #fc = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0)
-mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, n=2, smooth_param=0)
+#mm = MarkovModel('Johnny', Characters['Johnny'].listOfLines, n=2, smooth_param=0)
 
 
-combo1 = WeightedComboMarkovModel(mm, ex, weight=0.8)
-combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.8)
+#combo1 = WeightedComboMarkovModel(mm, ex, weight=0.8)
+#combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.8)
 
 #plt.plot(fc.initial_dist)
 #plt.ylabel('Standard Markov Initial Dist')
 #plt.show()
 
-print(mm.generate())
-print(ex.generate())
-print(combo1.generate())
-print(combo2.generate())
+#print(mm.generate())
+#print(ex.generate())
+#print(combo1.generate())
+#print(combo2.generate())
 
+Johnny_text = ""
+for line in corpus:
+    a = line.index(':')
+    name = line[0:a]
+    l = line[a+2:]
+    if name == 'Johnny':
+        Johnny_text +=  l
+    
+A = LSTM_byChar(Johnny_text)
+
+
+
+
+
+
+    
