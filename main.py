@@ -98,13 +98,11 @@ for script in best_scripts:
     file.close()
     
 external = []
-
-punctuation = "\"#$%&'()*+,-/:;<=>@[\]^_`{|}~"
-end_tokens = [".", "?", "!"]
-
 for script in external_raw:
     external.append(strip_line(script[0]))
 
+
+#### GENERATING RESULTS #######
 print("generating models")  
 print("generating external standard markov model")   
 ex = MarkovModel("ex", external, n=2, smooth_param=0)
@@ -151,9 +149,9 @@ combo2_bleu_scores = []
 reference = FullCorpus.listOfLines
 
 for i in range(200):
-    mm_bleu_scores.append(sentence_bleu(reference, mm_samples[i], weights=(0, 1, 0, 0)))
-    combo1_bleu_scores.append(sentence_bleu(reference, combo1_samples[i], weights=(0, 1, 0, 0)))
-    combo2_bleu_scores.append(sentence_bleu(reference, combo2_samples[i], weights=(0, 1, 0, 0)))
+    mm_bleu_scores.append(sentence_bleu(reference, mm_samples[i], weights=(1, 0, 0, 0)))
+    combo1_bleu_scores.append(sentence_bleu(reference, combo1_samples[i], weights=(1, 0, 0, 0)))
+    combo2_bleu_scores.append(sentence_bleu(reference, combo2_samples[i], weights=(1, 0, 0, 0)))
 
 print("calculating markov bleu")
 print("Markov Bleu: ", np.mean(mm_bleu_scores), "+/-", np.std(mm_bleu_scores), "\n\n")
