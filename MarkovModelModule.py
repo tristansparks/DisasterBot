@@ -83,7 +83,7 @@ class MarkovModel:
                 for i in range(len(line) - (self.n - 1)):
                     self.transition[self.states[line[i]]][self.states[line[i+1]]] += 1
             for i in range(len(self.transition)):
-                corpus_size = self.transition[i].sum() # corpus size is the # pairs of states where i is the first element in the pair
+                corpus_size = sum(self.transition[i]) # corpus size is the # pairs of states where i is the first element in the pair
                 if (corpus_size > 0 or self.smooth_param > 0):
                     self.transition[i] = [ elem + self.smooth_param for elem in self.transition[i] ]
                     self.transition[i] /= ( corpus_size + self.smooth_param * self.wordCount)
@@ -95,7 +95,7 @@ class MarkovModel:
                     self.transition[self.states[line[i]]][self.states[line[i+1]]][self.states[line[i+2]]] += 1
             for i in range(self.wordCount):
                 for j in range(self.wordCount):
-                    corpus_size = self.transition[i][j].sum() # corpus size is the # triplets of states where i,j are the first elements in the triplet
+                    corpus_size = sum(self.transition[i][j]) # corpus size is the # triplets of states where i,j are the first elements in the triplet
                     if (corpus_size > 0 or self.smooth_param > 0):
                         self.transition[i][j] = [ elem + self.smooth_param for elem in self.transition[i][j] ]
                         self.transition[i][j] /= ( corpus_size + self.smooth_param * self.wordCount)
@@ -311,7 +311,7 @@ class NormalizedComboMarkovModel:
         self.calc_transition()
         
     def calc_initial(self):
-        self.initial_dist = self.primaryMM.initial_dist
+        self.initial_dist = self.primaryMM.initial_dist.copy()
         
         external_weights = np.zeros(len(self.initial_dist))
         for word, index in self.states.items():
@@ -325,7 +325,7 @@ class NormalizedComboMarkovModel:
         self.initial_dist = self.initial_dist * self.weight + external_dist * (1 - self.weight)
         
     def calc_transition(self):  
-        self.transition = self.primaryMM.transition
+        self.transition = self.primaryMM.transition.copy()
         external_weights = np.zeros(self.primaryMM.shape)
         
         for word1, index1 in self.states.items():
