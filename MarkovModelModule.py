@@ -5,38 +5,9 @@ Created on Thu Dec  6 21:15:46 2018
 @author: Tristan Sparks
 @author: Mahyar Bayran
 """
-
-from nltk.tokenize import sent_tokenize
-from nltk.util import ngrams
-
-import numpy as np 
-import os.path
-import string
-from random import randint
+import numpy as np
 import random
 
-def random_choice(options, probabilities):
-    #sort probabilities in descending order and pick with probability 1/randomness
-    d = {}
-    for i in range(len(options)):
-        d[options[i]] = probabilities[i]
-
-    sorted_by_value = sorted(d.items(), key=lambda kv: kv[1], reverse=True)
-    
-    cumm_sorted = [0]
-    for i in range(len(sorted_by_value)):
-        cumm_sorted.append(cumm_sorted[-1] + sorted_by_value[i][1])
-    
-    random_num = random.uniform(0, 1)
-    
-    index = 0
-    for i in range(len(sorted_by_value)):
-        if ( (random_num >= cumm_sorted[i]) & (random_num <= cumm_sorted[i+1]) ):
-            index = i
-            break
-
-    return sorted_by_value[index][0]
-    
 # for n = 3, this takes >5 minutes and approximately 4*wordcount MB of RAM
 class MarkovModel:
     '''
@@ -394,8 +365,32 @@ class NormalizedComboMarkovModel:
             
         return generated_sent
     
+def random_choice(options, probabilities):
+    d = {}
+    for i in range(len(options)):
+        d[options[i]] = probabilities[i]
+
+    sorted_by_value = sorted(d.items(), key=lambda kv: kv[1], reverse=True)
+    
+    cumm_sorted = [0]
+    for i in range(len(sorted_by_value)):
+        cumm_sorted.append(cumm_sorted[-1] + sorted_by_value[i][1])
+    
+    random_num = random.uniform(0, 1)
+    
+    index = 0
+    for i in range(len(sorted_by_value)):
+        if ( (random_num >= cumm_sorted[i]) & (random_num <= cumm_sorted[i+1]) ):
+            index = i
+            break
+
+    return sorted_by_value[index][0]
+    
+    
 def softmax(X, theta = 1, axis = None):
     """
+    Written by Nolan B Conway, https://nolanbconaway.github.io/blog/2017/softmax-numpy
+    
     Compute the softmax of each element along an axis of X.
 
     Parameters

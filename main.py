@@ -4,23 +4,11 @@
 @author: Mahyar Bayran
 """
 
-from nltk.tokenize import sent_tokenize
-
-import matplotlib.pyplot as plt
-
 import numpy as np 
 import os.path
 import string
 from CharacterModule import Character
 from MarkovModelModule import MarkovModel, WeightedComboMarkovModel, NormalizedComboMarkovModel
-#from LSTM import LSTM_byChar
-
-from nltk.corpus import gutenberg
-from nltk.util import ngrams
-
-
-from nltk.translate.bleu_score import sentence_bleu
-
 
 ######### PRE-PROCESSING ###################
 def ModelPerplexity(distribution):
@@ -29,7 +17,6 @@ def ModelPerplexity(distribution):
         if (e != 0):
             exp += np.log(1/e)
     
-    #return 2**(-exp/len(distribution))
     return np.exp(exp/len(distribution))
 
 def strip_line(line):
@@ -53,6 +40,30 @@ def strip_line(line):
                 
     return sent
     
+def generated_text_beautify(line, characters=[]):
+    end_tokens = [".", "?", "!"]
+    
+    line[0] = line[0].capitalize()
+    pretty_line = [line[0]]
+    
+    i = 1
+    while(i < len(line)):
+        if (line[i] == 'i'):
+            pretty_line.append('I')
+        elif (i < len(line) - 1 and line[i+1] in end_tokens):
+            if (line[i] in characters or line[i] == 'i'):
+                pretty_line.append(line[i].capitalize()+line[i+1])
+            else:
+                pretty_line.append(line[i]+line[i+1])
+            i += 1
+        elif (line[i] in characters or line[i-1] == '.'):
+            pretty_line.append(line[i].capitalize())
+        else:
+            pretty_line.append(line[i])
+        
+        i += 1
+    return " ".join(pretty_line)
+            
 ############################# MAIN ############################################
 
 print("reading files")
@@ -78,8 +89,8 @@ for line in corpus:
     
     FullCorpus.addToLines(tokens)
     
-    if name not in charNames:
-        charNames.append(name)
+    if name.lower() not in charNames:
+        charNames.append(name.lower())
         newChar = Character(name, tokens)
         Characters[name] = newChar
 
@@ -110,19 +121,19 @@ print("generating primary standard markov model")
 mm = MarkovModel("fc", FullCorpus.listOfLines, n=2, smooth_param=0)
 
 print("generating M1")   
-combo1 = WeightedComboMarkovModel(mm, ex, weight=0.9)
+combo1 = WeightedComboMarkovModel(mm, ex, weight=0.1)
 print("generating M2")
-combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.9)
+combo2 = NormalizedComboMarkovModel(mm, ex, weight=0.1)
 
 print("MARKOV SAMPLES\n\n")
-for _ in range(2):
-    print(" ".join(mm.generate()), "\n\n")
+for _ in range(5):
+    print(generated_text_beautify(mm.generate(), charNames), "\n\n")
 print("M1 SAMPLES\n\n")
-for _ in range(2):
-    print(" ".join(combo1.generate()), "\n\n")
+for _ in range(5):
+    print(generated_text_beautify(combo1.generate(), charNames), "\n\n")
 print("M2 SAMPLES\n\n")
-for _ in range(2):
-    print(" ".join(combo2.generate()), "\n\n")
+for _ in range(5):
+    print(generated_text_beautify(combo2.generate(), charNames), "\n\n")
 
 print("calculating markov perplexity")
 print("Markov Perplexity: ", ModelPerplexity(mm.initial_dist))
@@ -132,33 +143,4 @@ print("Weight Perplexity: ", ModelPerplexity(combo1.initial_dist))
 
 print("calculating normal perplexity")
 print("Normal Perplexity: ", ModelPerplexity(combo2.initial_dist))
-
-mm_samples = []
-combo2_samples = []
-combo1_samples = []
-
-for _ in range(200):
-    mm_samples.append(mm.generate())
-    combo1_samples.append(combo1.generate())
-    combo2_samples.append(combo2.generate())
-    
-mm_bleu_scores = []
-combo1_bleu_scores = []
-combo2_bleu_scores = []
-
-reference = FullCorpus.listOfLines
-
-for i in range(200):
-    mm_bleu_scores.append(sentence_bleu(reference, mm_samples[i], weights=(1, 0, 0, 0)))
-    combo1_bleu_scores.append(sentence_bleu(reference, combo1_samples[i], weights=(1, 0, 0, 0)))
-    combo2_bleu_scores.append(sentence_bleu(reference, combo2_samples[i], weights=(1, 0, 0, 0)))
-
-print("calculating markov bleu")
-print("Markov Bleu: ", np.mean(mm_bleu_scores), "+/-", np.std(mm_bleu_scores), "\n\n")
-
-print("calculating weight bleu")
-print("Weight Bleu: ", np.mean(combo1_bleu_scores), "+/-", np.std(combo1_bleu_scores), "\n\n")
-
-print("calculating normal bleu")
-print("Normal Bleu: ", np.mean(combo2_bleu_scores), "+/-", np.std(combo2_bleu_scores), "\n\n")
 

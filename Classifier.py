@@ -10,16 +10,13 @@ import os
 import string
 import math
 
-import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import WordPunctTokenizer
-from nltk.collocations import BigramCollocationFinder
-from nltk.metrics import BigramAssocMeasures
+
 from nltk.util import ngrams
 
 from nltk.stem import WordNetLemmatizer
-import numpy as np
 wordnet_lemmatizer = WordNetLemmatizer()
 stemmer = PorterStemmer()
     

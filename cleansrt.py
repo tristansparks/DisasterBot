@@ -5,7 +5,6 @@
 
 import pysrt
 import os
-import string
 
 # Loading the Subtitle
 names = os.listdir('srts')
